@@ -4,7 +4,13 @@
 	<title>Operation Result</title>
 </head>
 <body>
-	<h1>Operation Result</h1>
-	<p>The result of performing "<%= mail %>" on <%= weight %> and <%= rate %> is:</p>
+	<div>
+		<h1>POSTAL RATE CALCULATION</h1>
+		<p><b>You have chosen: </b><%= mail %></p>
+		<p><b>Your Weight: </b><%= weight %></p>
+		<p><b>Cost of Shipping: </b>$<%= rate %></p>
+		<br><br>
+		<img src="usps.jpg" alt="USPS">
+	</div>
 </body>
 </html>
