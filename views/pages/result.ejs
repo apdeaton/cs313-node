@@ -2,15 +2,16 @@
 <html>
 <head>
 	<title>Operation Result</title>
+	<link rel="stylesheet" href="post.css">
 </head>
 <body>
-	<div>
+	<div id="main">
 		<h1>POSTAL RATE CALCULATION</h1>
-		<p><b>You have chosen: </b><%= mail %></p>
-		<p><b>Your Weight: </b><%= weight %></p>
-		<p><b>Cost of Shipping: </b>$<%= rate %></p>
+		<p><h3><b>You have chosen:</h3> </b><%= mail %></p>
+		<p><h3><b>Your Weight:</b></h3> </b><%= weight %></p>
+		<p><h3><b>Cost of Shipping:</h3> </b>$<%= rate %></p>
 		<br><br>
-		<img src="usps.jpg" alt="USPS">
+		<img src="usps.jpg" alt="USPS" style="margin-left: 125px;">
 	</div>
 </body>
 </html>
