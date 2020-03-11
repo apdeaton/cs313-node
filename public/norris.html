@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<title>Chuck Norris Jokes</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+<!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script>
+
+//This is a Jquery way of doing AJAX
+$(document).ready(() => {
+    $('#displayJoke').click(() => {
+        $.ajax({
+           url: 'displayJokes/',
+           type: 'GET',
+           dataType: 'json',
+           //Below basically says once the ajax is successful, do the following...
+           success: (data) => {
+                console.log('Ajax Successful!', data);
+                //var string = JSON.stringify(data);
+
+                //This loops through each piece of the json object
+                for (var key in data) {
+                    if (data.hasOwnProperty(key)) {
+                        var val = data[key];
+                        console.log(val);
+                        for (var i = 0; i < val.length; i++) {
+                            document.getElementById('displayJokes').innerHTML+= val[i].id + 
+                            ': ' + val[i].joke + '<br>';
+                        }
+                    }
+                }
+           }
+        });
+    });
+
+
+});
+
+/*
+function getJoke() {
+
+    var url = "http://localhost:5000/norris.html";
+    var xhttp = new XMLHttpRequest();
+    var joke;
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+        //var myObj = JSON.parse(this.responseText);
+        //joke = myObj.value.joke;
+        //jokeString = JSON.stringify(myObj);
+        document.getElementById("showJoke").innerHTML = "test";
+        }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.send();
+}
+*/
+
+</script>
+<link rel="stylesheet" href="norris.css">
+</head>
+
+<body id="backgroundColors">
+<header style="margin-left: 550px; color: white;">
+  <h1>Chuck Norris Jokes</h1>
+</header>
+<div id="main" style="border-style: ridge;">
+    <!--<form action="/getJoke" method="GET">-->
+        <p style="font-size: 20px;">Click Here for Chuck Norris Joke<br>
+        <button id="getJoke" class="btn btn-default">Get Joke</button>  
+        </p>
+
+        <div id="showJoke"></div>
+
+    <!--</form>-->
+    <form action="/saveJoke" method="GET">
+        <p style="font-size: 20px;">Click Here to Save the Joke<br>
+        <button id="saveJoke" type="submit" class="btn btn-default">Save Joke</button>  
+        </p>
+        
+
+    </form>
+    <!--<form action="/displayJokes" method="GET">-->
+        <p style="font-size: 20px;">Click Here to Display all Jokes<br>
+        <button id="displayJoke" type="submit" class="btn btn-default">Display Jokes</button>  
+        </p>
+        
+        <div id="displayJokes"></div><br>
+
+    <!--</form>-->
+    <form action="/deleteJoke" method="GET">
+        <p style="font-size: 20px;">Write the Numbered Joke you'd like to Delete<br>
+        <input type="text" id="id"><br><br>
+        <button id="deleteJoke" type="submit" class="btn btn-default">Delete Joke</button>  
+        </p>
+        
+
+    </form>
+    <form action="/createJoke" method="GET">
+        <p style="font-size: 20px;">Create Your Own Joke to Add to the List<br>
+        <input type="text" id="createdJoke"><br><br>
+        <button id="createJoke" type="submit" class="btn btn-default">Create Joke</button>  
+        </p>
+        
+
+    </form>
+
+</div>
+</body>
+</html>

@@ -1,21 +1,26 @@
 var http = require('http');
 const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 5000;
-const path = require('path');
+const port = process.env.PORT || 5000;
+
 
 // tell it to use the public directory as one where static files live
 app.use(express.static('public'));
-app.use(express.urlencoded({extended: true})); //This is to support url encoded bodies (for
-											   //use in post - the app.post as seen below) 
-app.use(express.json()); //To support json encoded bodies
 
-app.set('port', (process.env.PORT || 5000));
+// views is directory for all template files
+//the first 'views' is telling what they're looking for (which is the views -- this is a node thing),
+//and the 2nd parameter ('views', or in this case __dirname +'/views') is the
+//directory it is found in
+app.set('views', 'views');
 
-// Start the server running
-app.listen(app.get('port'), function() {
-	console.log('Node app is running on port', app.get('port'));
-  });
+//The 'view engine' is a node thing (perhaps) and it specifies it's looking for an ejs file
+//This says "the view engine we are going to use for this is ejs"
+app.set('view engine', 'ejs');
+
+
+
+
+
 
 
 // Following the "Single query" approach from: https://node-postgres.com/features/pooling#single-query
@@ -29,64 +34,18 @@ const connectionString = process.env.DATABASE_URL || "postgres://ihhzjlnhwcruop:
 // Establish a new connection to the data source specified the connection string.
 const pool = new Pool({connectionString: connectionString});
 
-// This says that we want the function "displayJokes" below to handle
+
+app.set('port', (process.env.PORT || 5000));
+app.use(express.static(__dirname + '/public'));
+
+// This says that we want the function "getPerson" below to handle
 // any requests that come to the /getPerson endpoint
-app.get('/displayJokes', function (request, response) {
-	//Get the jokes in the database
-	console.log("Getting all Jokes...");
+app.get('/getPerson', getPerson);
 
-	var result = {
-		jokes: [
-			{id: 1, joke: "Joke 1"},
-			{id: 2, joke: "Joke 2"},
-			{id: 3, joke: "Joke 3"},
-		]
-	}
-
-	response.json(result);
-
+// Start the server running
+app.listen(app.get('port'), function() {
+  console.log('Node app is running on port', app.get('port'));
 });
-
-app.get('/deleteJoke', function (request, response) {
-	//if in the app.get() function one line above, this bottom line of code would work
-	//if it was app.get('/deleteJoke,...) 
-	var id = request.query.id;
-
-	//IF the function, the app.get(), has app.get('/deleteJoke/:id',....)
-	//we will use this bottom code
-	//var id= request.params.id;
-
-
-	//Get the jokes in the database
-	console.log("Deleting Joke with id: " + id);
-
-	var result = {
-		jokes: [
-			{id: 1, joke: "Joke 1"},
-			{id: 2, joke: "Joke 2"},
-			{id: 3, joke: "Joke 3"},
-		]
-	}
-
-	response.json(result);
-
-});
-
-app.post('/createJoke', function (request, response) {
-	//Create a new joke
-	console.log("Creating a New Joke...");
-	
-	var joke = request.body.createdJoke;
-
-	response.json({success: true});
-	});
-
-
-
-function onRequest(request, response){
-	console.log("Received a Request from " + request.url);
-}
-
 
 
 // This function handles requests to the /getPerson endpoint
@@ -155,6 +114,4 @@ function getPersonFromDb(id, callback) {
 		callback(null, result.rows);
 	});
 
-	var server = http.createServer(onRequest);
-	server.listen(5000);
 } // end of getPersonFromDb
