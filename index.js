@@ -26,60 +26,103 @@ const { Pool } = require("pg"); // This is the postgres database connection modu
 // otherwise, it will use a connection string that refers to a local postgres DB
 const connectionString = process.env.DATABASE_URL || "postgres://ihhzjlnhwcruop:11914da3ce8765ff885b575530d9b5bddb5f12302862414990c0640303c22ea2@ec2-52-202-185-87.compute-1.amazonaws.com:5432/d3n5sus6t084ko?ssl=true";
 
+console.log(connectionString);
 // Establish a new connection to the data source specified the connection string.
 const pool = new Pool({connectionString: connectionString});
 
+app.post('/saveJoke/:joke', function (request, response) {
+	//Save a joke
+	var joke = request.params.joke;
+	console.log("Saving a Joke...");
+
+	const sql = "INSERT INTO jokes VALUES (nextval('jokes_id_seq'), '" + joke + "');";
+
+	pool.query(sql, function(err, result) {
+		// If an error occurred...
+		if (err) {
+			console.log("Error in query: ")
+			console.log(err);
+			callback(err, null);
+		}
+		else {
+			console.log("Joke Successfully Saved!");
+		}
+
+		
+	});
+	
+});
+
 // This says that we want the function "displayJokes" below to handle
-// any requests that come to the /getPerson endpoint
+// any requests that come to the /displayJokes endpoint
 app.get('/displayJokes', function (request, response) {
 	//Get the jokes in the database
 	console.log("Getting all Jokes...");
 
-	var result = {
-		jokes: [
-			{id: 1, joke: "Joke 1"},
-			{id: 2, joke: "Joke 2"},
-			{id: 3, joke: "Joke 3"},
-		]
-	}
+	const sql = "SELECT * FROM jokes;";
 
-	response.json(result);
+	pool.query(sql, function(err, result) {
+		// If an error occurred...
+		if (err) {
+			console.log("Error in query: ")
+			console.log(err);
+			callback(err, null);
+		}
 
-});
+		// Log this to the console for debugging purposes.
+		console.log("Found result: " + JSON.stringify(result.rows));
 
-app.get('/deleteJoke', function (request, response) {
-	//if in the app.get() function one line above, this bottom line of code would work
-	//if it was app.get('/deleteJoke,...) 
-	var id = request.query.id;
+		var result = JSON.stringify(result.rows);
+		//Sending the response back to AJAX request
+		response.json(result);
 
-	//IF the function, the app.get(), has app.get('/deleteJoke/:id',....)
-	//we will use this bottom code
-	//var id= request.params.id;
-
-
-	//Get the jokes in the database
-	console.log("Deleting Joke with id: " + id);
-
-	var result = {
-		jokes: [
-			{id: 1, joke: "Joke 1"},
-			{id: 2, joke: "Joke 2"},
-			{id: 3, joke: "Joke 3"},
-		]
-	}
-
-	response.json(result);
-
-});
-
-app.post('/createJoke', function (request, response) {
-	//Create a new joke
-	console.log("Creating a New Joke...");
-	
-	var joke = request.body.createdJoke;
-
-	response.json({success: true});
+		
 	});
+	
+
+});
+
+app.post('/deleteJoke/:jokeNum', function (request, response) {
+	//Delete a joke
+	var jokeNum = request.params.jokeNum;
+	console.log("Deleting a Joke..." + jokeNum);
+
+	const sql = "DELETE FROM jokes WHERE id = " + jokeNum + ";";
+
+	pool.query(sql, function(err, result) {
+		// If an error occurred...
+		if (err) {
+			console.log("Error in query: ")
+			console.log(err);
+		}
+		else {
+			console.log("Joke Successfully Deleted!");
+		}
+	});
+	
+
+});
+
+app.post('/createJoke/:joke', function (request, response) {
+	//Save a joke
+	var joke = request.params.joke;
+	console.log("Creating a New Joke...");
+
+	const sql = "INSERT INTO jokes VALUES (nextval('jokes_id_seq'), '" + joke + "');";
+
+	pool.query(sql, function(err, result) {
+		// If an error occurred...
+		if (err) {
+			console.log("Error in query: ")
+			console.log(err);
+		}
+		else {
+			console.log("Joke Successfully Created!");
+		}
+
+		
+	});
+});
 
 
 
@@ -88,6 +131,9 @@ function onRequest(request, response){
 }
 
 
+
+
+////////////////////////////////////////////////////////////////////////////
 
 // This function handles requests to the /getPerson endpoint
 // it expects to have an id on the query string, such as: http://localhost:5000/getPerson?id=1

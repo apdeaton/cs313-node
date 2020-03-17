@@ -12,27 +12,49 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script>
 
+
+//This is to get a joke from an external API
+$(document).ready(() => {
+    $('#getJoke').click(() => {
+        var url = "http://api.icndb.com/jokes/random";
+    var xhttp = new XMLHttpRequest();
+    var joke;
+    xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+        var myObj = JSON.parse(this.responseText);
+        joke = myObj.value.joke;
+        jokeString = JSON.stringify(myObj);
+        document.getElementById("showJoke").innerHTML = joke;
+        }
+    };
+    xhttp.open("GET", url, true);
+    xhttp.send();
+    });
+});
+
+
 //This is a Jquery way of doing AJAX
 $(document).ready(() => {
     $('#displayJoke').click(() => {
+        //Clear div so that
+        document.getElementById('displayJokes').innerHTML = "";
         $.ajax({
            url: 'displayJokes/',
            type: 'GET',
            dataType: 'json',
            //Below basically says once the ajax is successful, do the following...
            success: (data) => {
-                console.log('Ajax Successful!', data);
+                var results = JSON.parse(data);
+                console.log('Ajax Successful!', results);
                 //var string = JSON.stringify(data);
 
                 //This loops through each piece of the json object
-                for (var key in data) {
+                for (var key in results) {
                     if (data.hasOwnProperty(key)) {
-                        var val = data[key];
+                        var val = results[key];
                         console.log(val);
-                        for (var i = 0; i < val.length; i++) {
-                            document.getElementById('displayJokes').innerHTML+= val[i].id + 
-                            ': ' + val[i].joke + '<br>';
-                        }
+                        document.getElementById('displayJokes').innerHTML+= val.id + 
+                        ': ' + val.joke + '<br>';
                     }
                 }
            }
@@ -42,24 +64,78 @@ $(document).ready(() => {
 
 });
 
-/*
-function getJoke() {
+//This handles saving a joke
+$(document).ready(() => {
+    $('#saveJoke').click(() => {
+       
+        var joke = document.getElementById('showJoke').textContent;
 
-    var url = "http://localhost:5000/norris.html";
-    var xhttp = new XMLHttpRequest();
-    var joke;
-    xhttp.onreadystatechange = function () {
-        if (this.readyState == 4 && this.status == 200) {
-        //var myObj = JSON.parse(this.responseText);
-        //joke = myObj.value.joke;
-        //jokeString = JSON.stringify(myObj);
-        document.getElementById("showJoke").innerHTML = "test";
+        if (joke != "") {
+            $.ajax({
+            url: 'saveJoke/' + joke,
+            type: 'POST',
+            dataType: 'json'
+            
+            });
+            alert("Joke Saved!");
         }
-    };
-    xhttp.open("GET", url, true);
-    xhttp.send();
-}
-*/
+        else {
+            alert("No Joke to Save!");
+        }
+    });
+
+
+});
+
+//This handles deleting a joke
+$(document).ready(() => {
+    $('#deleteJoke').click(() => {
+       
+        var jokeNum = document.getElementById("deleteJokeNum").value;
+
+        if (jokeNum != "") {
+            $.ajax({
+            url: 'deleteJoke/' + jokeNum,
+            type: 'POST',
+            dataType: 'json'
+            
+            });
+            alert("Joke Successfully Deleted!");
+            document.getElementById("deleteJokeNum").value = "";
+        }
+        else {
+            alert("Write a Joke Number First!");
+        }
+    });
+
+
+});
+
+//This handles creating a joke
+$(document).ready(() => {
+    $('#createJoke').click(() => {
+       
+        var joke = document.getElementById("createdJoke").value;
+
+        if (joke != "") {
+            $.ajax({
+            url: 'createJoke/' + joke,
+            type: 'POST',
+            dataType: 'json'
+            
+            });
+            alert("Joke Successfully Created!");
+            document.getElementById("createdJoke").value = "";
+        }
+        else {
+            alert("Type the numbered Joke you'd like to Delete First!");
+        }
+    });
+
+
+});
+
+
 
 </script>
 <link rel="stylesheet" href="norris.css">
@@ -75,40 +151,41 @@ function getJoke() {
         <button id="getJoke" class="btn btn-default">Get Joke</button>  
         </p>
 
-        <div id="showJoke"></div>
+        <div id="showJoke" style="width: 500px;"></div>
+        <br>
 
     <!--</form>-->
-    <form action="/saveJoke" method="GET">
+    <!--<form action="/saveJoke" method="POST">-->
         <p style="font-size: 20px;">Click Here to Save the Joke<br>
-        <button id="saveJoke" type="submit" class="btn btn-default">Save Joke</button>  
+        <button id="saveJoke" class="btn btn-default">Save Joke</button>  
         </p>
         
 
-    </form>
+    <!--</form>-->
     <!--<form action="/displayJokes" method="GET">-->
         <p style="font-size: 20px;">Click Here to Display all Jokes<br>
         <button id="displayJoke" type="submit" class="btn btn-default">Display Jokes</button>  
         </p>
         
-        <div id="displayJokes"></div><br>
+        <div id="displayJokes" style="width: 500px;"></div><br>
 
     <!--</form>-->
-    <form action="/deleteJoke" method="GET">
+    <!--<form action="/deleteJoke" method="GET">-->
         <p style="font-size: 20px;">Write the Numbered Joke you'd like to Delete<br>
-        <input type="text" id="id"><br><br>
-        <button id="deleteJoke" type="submit" class="btn btn-default">Delete Joke</button>  
+        <input type="text" id="deleteJokeNum" style="color: black;"><br><br>
+        <button id="deleteJoke" class="btn btn-default">Delete Joke</button>  
         </p>
         
 
-    </form>
-    <form action="/createJoke" method="GET">
+    <!--</form>-->
+    <!--<form action="/createJoke" method="POST">-->
         <p style="font-size: 20px;">Create Your Own Joke to Add to the List<br>
-        <input type="text" id="createdJoke"><br><br>
-        <button id="createJoke" type="submit" class="btn btn-default">Create Joke</button>  
+        <input type="text" id="createdJoke" style="color: black;"><br><br>
+        <button id="createJoke"class="btn btn-default">Create Joke</button>  
         </p>
         
 
-    </form>
+    <!--</form>-->
 
 </div>
 </body>
