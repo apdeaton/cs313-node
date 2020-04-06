@@ -135,16 +135,22 @@ $(document).ready(() => {
 
 });
 
-
+function hideJoke() {
+    document.getElementById('displayJokes').innerHTML = "";
+}
 
 </script>
 <link rel="stylesheet" href="norris.css">
 </head>
 
 <body id="backgroundColors">
-<header style="margin-left: 550px; color: white;">
-  <h1>Chuck Norris Jokes</h1>
-</header>
+
+<canvas id="myCanvas" width="1300" height="80"
+style="border:1px solid #d3d3d3; margin-left: -5px; margin-bottom: -20px;">
+Your browser does not support the canvas element.
+</canvas>
+<br><br><br>
+
 <div id="main" style="border-style: ridge;">
     <!--<form action="/getJoke" method="GET">-->
         <p style="font-size: 20px;">Click Here for Chuck Norris Joke<br>
@@ -165,6 +171,7 @@ $(document).ready(() => {
     <!--<form action="/displayJokes" method="GET">-->
         <p style="font-size: 20px;">Click Here to Display all Jokes<br>
         <button id="displayJoke" type="submit" class="btn btn-default">Display Jokes</button>  
+        <button id="hideJoke" onclick="hideJoke()" class="btn btn-default">Hide Jokes</button> 
         </p>
         
         <div id="displayJokes" style="width: 500px;"></div><br>
@@ -188,5 +195,25 @@ $(document).ready(() => {
     <!--</form>-->
 
 </div>
+
+<script>
+    window.onload = function() {
+        var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "orange";
+    ctx.fillRect(0, 0, 1300, 100);
+    
+    ctx.fillStyle = "white";
+    ctx.fillRect(20, 0,10,100);
+    ctx.fillRect(50, 0,20,100);
+
+    ctx.fillRect(1230, 0,20,100);
+    ctx.fillRect(1270, 0,10,100);
+
+    ctx.fillStyle="White";
+    ctx.font = "90px times new roman";
+    ctx.fillText("CHUCK NORRIS JOKES", 160,70);
+};
+</script>
 </body>
 </html>
